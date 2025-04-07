@@ -1,0 +1,14 @@
+ktor:
+    application:
+        modules:
+            - com.sg.ApplicationKt.module
+    deployment:
+        port: 8080
+postgres:
+  url: "jdbc:postgresql://127.0.0.1:5432/postgres"
+  user: "postgres"
+  password: "1234"
+  driver: "org.postgresql.Driver"
+jwt:
+  secret-key: "BLOCKBIT_2024_SECURE_JWT_KEY_COMPLEX_RANDOM_SEED_987!@#"
+  expiration-time: 86400000
