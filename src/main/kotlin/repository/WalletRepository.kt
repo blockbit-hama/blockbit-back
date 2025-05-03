@@ -3,9 +3,26 @@ package com.sg.repository
 import com.sg.config.factory.DatabaseFactory.dbQuery
 import com.sg.dto.WalletDTO
 import com.sg.dto.WalletResponseDTO
+import com.sg.utils.DateTimeUtil
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.statements.InsertStatement
 import java.security.MessageDigest
+
+object PolicyTable : Table("policies") {
+    val polNum = integer("pol_num").autoIncrement()
+    val polApprovalThreshold = integer("pol_approval_threshold")
+    val polMaxDailyLimit = decimal("pol_max_daily_limit", 20, 8)  // precision과 scale 추가
+    val polSpendingLimit = decimal("pol_spending_limit", 20, 8)   // precision과 scale 추가
+    val polWhitelistOnly = bool("pol_whitelist_only")
+    val creusr = integer("creusr").nullable()
+    val credat = char("credat", 8).nullable()
+    val cretim = char("cretim", 6).nullable()
+    val lmousr = integer("lmousr").nullable()
+    val lmodat = char("lmodat", 8).nullable()
+    val lmotim = char("lmotim", 6).nullable()
+    val active = char("active", 1)
+
+    override val primaryKey = PrimaryKey(polNum)
+}
 
 object WalletTable : Table("wallets") {
     val walNum = integer("wal_num").autoIncrement()
@@ -18,12 +35,12 @@ object WalletTable : Table("wallets") {
     val astId = integer("ast_id").references(AssetTable.astNum).nullable()
     val polId = integer("pol_id").nullable() // references policies table
     val creusr = integer("creusr").nullable()
-    val credat = varchar("credat", 8).nullable()
-    val cretim = varchar("cretim", 6).nullable()
+    val credat = char("credat", 8).nullable()
+    val cretim = char("cretim", 6).nullable()
     val lmousr = integer("lmousr").nullable()
-    val lmodat = varchar("lmodat", 8).nullable()
-    val lmotim = varchar("lmotim", 6).nullable()
-    val active = varchar("active", 1)
+    val lmodat = char("lmodat", 8).nullable()
+    val lmotim = char("lmotim", 6).nullable()
+    val active = char("active", 1)
 
     override val primaryKey = PrimaryKey(walNum)
 }
@@ -204,8 +221,8 @@ class WalletRepository {
         val updateResult = WalletTable.update({ WalletTable.walNum eq walNum }) {
             it[WalletTable.walStatus] = walStatus
             it[lmousr] = userNum
-            it[lmodat] = com.sg.dto.DateTimeUtil.getCurrentDate()
-            it[lmotim] = com.sg.dto.DateTimeUtil.getCurrentTime()
+            it[lmodat] = DateTimeUtil.getCurrentDate()
+            it[lmotim] = DateTimeUtil.getCurrentTime()
         }
         updateResult > 0
     }
@@ -216,6 +233,14 @@ class WalletRepository {
             it[active] = "0"
         }
         updateResult > 0
+    }
+    
+    // 정책에서 승인 임계값 조회 - getApprovalThreshold 함수 추가
+    suspend fun getApprovalThreshold(polId: Int): Int? = dbQuery {
+        PolicyTable
+            .select { PolicyTable.polNum eq polId }
+            .map { it[PolicyTable.polApprovalThreshold] }
+            .singleOrNull()
     }
 
     // 비밀번호 해시 함수

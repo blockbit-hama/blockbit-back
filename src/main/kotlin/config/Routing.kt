@@ -1,19 +1,9 @@
 package com.sg.config
 
-import com.sg.controller.userInfoRoutes
+import com.sg.controller.*
 import com.sg.controller.wallet.walletRoutes as cryptoWalletRoutes
-import com.sg.controller.protectedRoutes
-import com.sg.controller.assetRoutes
-import com.sg.controller.walletRoutes
-import com.sg.controller.addressRoutes
-import com.sg.repository.UserInfoRepository
-import com.sg.repository.AssetRepository
-import com.sg.repository.WalletRepository
-import com.sg.repository.AddressRepository
-import com.sg.service.UserInfoService
-import com.sg.service.AssetService
-import com.sg.service.WalletService
-import com.sg.service.AddressService
+import com.sg.repository.*
+import com.sg.service.*
 import com.sg.service.wallet.BitcoinMultiSigService
 import com.sg.service.wallet.EthereumMpcService
 import io.ktor.server.application.*
@@ -33,6 +23,15 @@ fun Application.configureRouting() {
     val addressRepository = AddressRepository()
     val addressService = AddressService(addressRepository)
 
+    val balanceRepository = BalanceRepository()
+    val balanceService = BalanceService(balanceRepository)
+    
+    val transactionRepository = TransactionRepository()
+    val transactionService = TransactionService(transactionRepository)
+    
+    val approvalRepository = ApprovalRepository()
+    val approvalService = ApprovalService(approvalRepository, transactionService)
+
     val bitcoinMultiSigService = BitcoinMultiSigService()
     val ethereumMpcService = EthereumMpcService()
 
@@ -45,6 +44,9 @@ fun Application.configureRouting() {
         assetRoutes(assetService)
         walletRoutes(walletService)
         addressRoutes(addressService)
+        balanceRoutes(balanceService)
+        transactionRoutes(transactionService)
+        approvalRoutes(approvalService)
         cryptoWalletRoutes(bitcoinMultiSigService, ethereumMpcService)
     }
 }
