@@ -2,6 +2,7 @@ package com.sg.service
 
 import com.sg.dto.*
 import com.sg.repository.UserInfoRepository
+import com.sg.utils.DateTimeUtil
 import java.security.MessageDigest
 
 class UserInfoService(private val repository: UserInfoRepository = UserInfoRepository()) {

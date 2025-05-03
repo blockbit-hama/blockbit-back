@@ -3,7 +3,7 @@ package com.sg.service
 import com.sg.dto.AssetDTO
 import com.sg.dto.AssetResponseDTO
 import com.sg.dto.AssetUpdateDTO
-import com.sg.dto.DateTimeUtil
+import com.sg.utils.DateTimeUtil
 import com.sg.repository.AssetRepository
 
 class AssetService(private val repository: AssetRepository = AssetRepository()) {

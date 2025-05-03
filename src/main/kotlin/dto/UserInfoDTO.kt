@@ -1,9 +1,6 @@
 package com.sg.dto
 
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 @Serializable
 data class UserInfoDTO(
@@ -67,13 +64,4 @@ data class UserInfoResponseDTO(
     val active: String
 )
 
-// 현재 날짜와 시간을 얻는 유틸리티 함수
-object DateTimeUtil {
-    fun getCurrentDate(): String {
-        return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-    }
 
-    fun getCurrentTime(): String {
-        return LocalTime.now().format(DateTimeFormatter.ofPattern("HHmmss"))
-    }
-}

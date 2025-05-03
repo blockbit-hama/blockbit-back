@@ -3,7 +3,7 @@ package com.sg.service
 import com.sg.dto.AddressDTO
 import com.sg.dto.AddressResponseDTO
 import com.sg.dto.AddressUpdateDTO
-import com.sg.dto.DateTimeUtil
+import com.sg.utils.DateTimeUtil
 import com.sg.repository.AddressRepository
 
 class AddressService(private val repository: AddressRepository = AddressRepository()) {

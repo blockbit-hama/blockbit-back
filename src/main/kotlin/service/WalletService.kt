@@ -3,7 +3,7 @@ package com.sg.service
 import com.sg.dto.WalletDTO
 import com.sg.dto.WalletResponseDTO
 import com.sg.dto.WalletUpdateDTO
-import com.sg.dto.DateTimeUtil
+import com.sg.utils.DateTimeUtil
 import com.sg.repository.WalletRepository
 
 class WalletService(private val repository: WalletRepository = WalletRepository()) {
