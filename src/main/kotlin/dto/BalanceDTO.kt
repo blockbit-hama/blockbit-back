@@ -29,5 +29,11 @@ data class BalanceResponseDTO(
     val balAfter: Double,
     val balConfirmed: Double,
     val balPending: Double,
+    val creusr: Int? = null,
+    val credat: String? = null,
+    val cretim: String? = null,
+    val lmousr: Int? = null,
+    val lmodat: String? = null,
+    val lmotim: String? = null,
     val active: String
 )

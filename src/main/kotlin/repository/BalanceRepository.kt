@@ -142,6 +142,12 @@ class BalanceRepository {
         balAfter = row[BalanceTable.balAfter].toDouble(),
         balConfirmed = row[BalanceTable.balConfirmed].toDouble(),
         balPending = row[BalanceTable.balPending].toDouble(),
+        creusr = row[BalanceTable.creusr],
+        credat = row[BalanceTable.credat],
+        cretim = row[BalanceTable.cretim],
+        lmousr = row[BalanceTable.lmousr],
+        lmodat = row[BalanceTable.lmodat],
+        lmotim = row[BalanceTable.lmotim],
         active = row[BalanceTable.active]
     )
 }
