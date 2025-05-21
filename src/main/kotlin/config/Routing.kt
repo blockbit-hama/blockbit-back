@@ -11,6 +11,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
+    val bitcoinApiUrl = environment.config.propertyOrNull("bitcoin.api.url")?.getString() ?: "https://api.blockcypher.com/v1/btc/test3"
+    val bitcoinApiKey = environment.config.propertyOrNull("bitcoin.api.key")?.getString() ?: ""
+    
     val userInfoRepository = UserInfoRepository()
     val userInfoService = UserInfoService(userInfoRepository)
     
@@ -32,7 +35,7 @@ fun Application.configureRouting() {
     val approvalRepository = ApprovalRepository()
     val approvalService = ApprovalService(approvalRepository, transactionService)
 
-    val bitcoinMultiSigService = BitcoinMultiSigService()
+    val bitcoinMultiSigService = BitcoinMultiSigService(bitcoinApiUrl, bitcoinApiKey)
     val ethereumMpcService = EthereumMpcService()
 
     routing {

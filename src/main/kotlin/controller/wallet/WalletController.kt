@@ -23,7 +23,7 @@ fun Route.walletRoutes(
                     val wallet = bitcoinMultiSigService.createMultisigWallet()
                     call.respond(HttpStatusCode.Created, wallet)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to create Bitcoin wallet: ${e.message}")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create Bitcoin wallet: ${e.message}"))
                 }
             }
 
@@ -40,7 +40,7 @@ fun Route.walletRoutes(
                     )
                     call.respond(HttpStatusCode.OK, tx)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to create Bitcoin transaction: ${e.message}")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create Bitcoin transaction: ${e.message}"))
                 }
             }
 
@@ -48,13 +48,47 @@ fun Route.walletRoutes(
             post("/transaction/complete") {
                 try {
                     val request = call.receive<BitcoinCompleteRequestDTO>()
-                    val signedTx = bitcoinMultiSigService.addSignatureToTransaction(
+                    val txId = bitcoinMultiSigService.addSignatureToTransaction(
                         request.partiallySignedTransaction,
                         request.privateKeyHex
                     )
-                    call.respond(HttpStatusCode.OK, signedTx)
+                    call.respond(HttpStatusCode.OK, mapOf(
+                        "txId" to txId,
+                        "message" to "Transaction successfully broadcasted to the Bitcoin testnet",
+                        "explorerUrl" to "https://mempool.space/testnet/tx/$txId"
+                    ))
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to complete Bitcoin transaction: ${e.message}")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to complete Bitcoin transaction: ${e.message}"))
+                }
+            }
+            
+            // 트랜잭션 상태 조회
+            get("/transaction/{txId}") {
+                try {
+                    val txId = call.parameters["txId"] ?: return@get call.respond(
+                        HttpStatusCode.BadRequest, mapOf("error" to "Transaction ID is required"))
+                    
+                    val status = bitcoinMultiSigService.getTransactionStatus(txId)
+                    call.respond(HttpStatusCode.OK, mapOf(
+                        "txId" to txId,
+                        "status" to status,
+                        "explorerUrl" to "https://mempool.space/testnet/tx/$txId"
+                    ))
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to get transaction status: ${e.message}"))
+                }
+            }
+            
+            // 주소의 UTXO 목록 조회
+            get("/utxos/{address}") {
+                try {
+                    val address = call.parameters["address"] ?: return@get call.respond(
+                        HttpStatusCode.BadRequest, mapOf("error" to "Bitcoin address is required"))
+                    
+                    val utxoInfo = bitcoinMultiSigService.getAddressUTXOs(address)
+                    call.respond(HttpStatusCode.OK, utxoInfo)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to retrieve UTXOs: ${e.message}"))
                 }
             }
         }
@@ -66,7 +100,7 @@ fun Route.walletRoutes(
                     val wallet = ethereumMpcService.createMpcWallet()
                     call.respond(HttpStatusCode.Created, wallet)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to create Ethereum wallet: ${e.message}")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create Ethereum wallet: ${e.message}"))
                 }
             }
 
@@ -82,7 +116,7 @@ fun Route.walletRoutes(
                     )
                     call.respond(HttpStatusCode.OK, partialSig)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to create Ethereum transaction: ${e.message}")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create Ethereum transaction: ${e.message}"))
                 }
             }
 
@@ -94,24 +128,26 @@ fun Route.walletRoutes(
                         request.firstSignature,
                         request.secondParticipantIndex
                     )
-                    call.respond(HttpStatusCode.OK, txHash)
+                    call.respond(HttpStatusCode.OK, mapOf(
+                        "txHash" to txHash,
+                        "message" to "Transaction successfully submitted to the Ethereum network",
+                        "explorerUrl" to "https://sepolia.etherscan.io/tx/$txHash"
+                    ))
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to complete Ethereum transaction: ${e.message}")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to complete Ethereum transaction: ${e.message}"))
                 }
             }
 
             // 이더리움 잔액 조회
             get("/balance/{address}") {
                 try {
-                    val address = call.parameters["address"]
-                    if (address == null) {
-                        call.respond(HttpStatusCode.BadRequest, "Address parameter is required")
-                        return@get
-                    }
+                    val address = call.parameters["address"] ?: return@get call.respond(
+                        HttpStatusCode.BadRequest, mapOf("error" to "Address parameter is required"))
+                    
                     val balance = ethereumMpcService.getBalance(address)
-                    call.respond(HttpStatusCode.OK, balance)
+                    call.respond(HttpStatusCode.OK, mapOf("balance" to balance))
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to get Ethereum balance: ${e.message}")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to get Ethereum balance: ${e.message}"))
                 }
             }
         }

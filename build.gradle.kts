@@ -47,6 +47,16 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
 
+    // Ktor 클라이언트 의존성 추가
+    implementation("io.ktor:ktor-client-core:2.3.7")
+    implementation("io.ktor:ktor-client-cio:2.3.7")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
+    implementation("io.ktor:ktor-client-gson:2.3.7")
+    implementation("io.ktor:ktor-client-logging:2.3.7")
+
+    // Gson 의존성 추가
+    implementation("com.google.code.gson:gson:2.10.1")
+
     testImplementation("io.mockk:mockk:1.13.5")
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)

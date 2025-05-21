@@ -12,3 +12,8 @@ postgres:
 jwt:
   secret-key: "BLOCKBIT_2024_SECURE_JWT_KEY_COMPLEX_RANDOM_SEED_987!@#"
   expiration-time: 86400000
+bitcoin:
+  network: testnet
+  api:
+    url: "https://api.blockcypher.com/v1/btc/test3"
+    key: "2b92af9866d34ffe9d83d5e62b0a74cd"
