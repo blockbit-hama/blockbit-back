@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 data class EthereumTransactionRequestDTO(
     var walletId: String = "",
     var participantIndex: Int = 0,
+    var fromAddress: String = "",
     var toAddress: String = "",
     var amount: String = "0"
 )

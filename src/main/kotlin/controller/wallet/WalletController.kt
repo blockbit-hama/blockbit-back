@@ -111,6 +111,7 @@ fun Route.walletRoutes(
                     val partialSig = ethereumMpcService.createPartialSignature(
                         request.walletId,
                         request.participantIndex,
+                        request.fromAddress,
                         request.toAddress,
                         request.amount
                     )
@@ -145,7 +146,7 @@ fun Route.walletRoutes(
                         HttpStatusCode.BadRequest, mapOf("error" to "Address parameter is required"))
                     
                     val balance = ethereumMpcService.getBalance(address)
-                    call.respond(HttpStatusCode.OK, mapOf("balance" to balance))
+                    call.respond(HttpStatusCode.OK, mapOf("balance" to balance.toDouble()))
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to get Ethereum balance: ${e.message}"))
                 }

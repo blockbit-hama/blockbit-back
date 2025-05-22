@@ -17,3 +17,10 @@ bitcoin:
   api:
     url: "https://api.blockcypher.com/v1/btc/test3"
     key: "2b92af9866d34ffe9d83d5e62b0a74cd"
+ethereum:
+  network: sepolia
+  infura:
+    url: "https://sepolia.infura.io/v3/49298a1cbcd448d7a20fd0fb7ee12420"
+    api-key: "49298a1cbcd448d7a20fd0fb7ee12420"
+  explorer:
+    url: "https://sepolia.etherscan.io"

@@ -13,6 +13,9 @@ import io.ktor.server.routing.*
 fun Application.configureRouting() {
     val bitcoinApiUrl = environment.config.propertyOrNull("bitcoin.api.url")?.getString() ?: "https://api.blockcypher.com/v1/btc/test3"
     val bitcoinApiKey = environment.config.propertyOrNull("bitcoin.api.key")?.getString() ?: ""
+
+    val ethereumInfuraUrl = environment.config.propertyOrNull("ethereum.infura.url")?.getString()
+        ?: "https://sepolia.infura.io/v3/49298a1cbcd448d7a20fd0fb7ee12420"
     
     val userInfoRepository = UserInfoRepository()
     val userInfoService = UserInfoService(userInfoRepository)
@@ -36,7 +39,7 @@ fun Application.configureRouting() {
     val approvalService = ApprovalService(approvalRepository, transactionService)
 
     val bitcoinMultiSigService = BitcoinMultiSigService(bitcoinApiUrl, bitcoinApiKey)
-    val ethereumMpcService = EthereumMpcService()
+    val ethereumMpcService = EthereumMpcService(ethereumInfuraUrl)
 
     routing {
         get("/") {
