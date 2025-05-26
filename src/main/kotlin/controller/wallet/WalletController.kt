@@ -10,12 +10,64 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.math.BigDecimal
 
 fun Route.walletRoutes(
     bitcoinMultiSigService: BitcoinMultiSigService,
     ethereumMpcService: EthereumMpcService
 ) {
     route("/api/wallet") {
+        
+        // 주소 잔액 조회 API 추가
+        route("/balance") {
+            // 비트코인 주소 잔액 조회
+            get("/bitcoin/{address}") {
+                try {
+                    val address = call.parameters["address"] ?: return@get call.respond(
+                        HttpStatusCode.BadRequest, mapOf("error" to "Bitcoin address is required"))
+
+                    // UTXO 정보를 통해 잔액 조회
+                    val utxoInfo = bitcoinMultiSigService.getAddressUTXOs(address)
+                    
+                    val balanceResponse = AddressBalanceResponseDTO(
+                        address = address,
+                        network = "bitcoin",
+                        balance = utxoInfo.totalBalance.toString(),
+                        formattedBalance = utxoInfo.totalBalanceBTC,
+                        unit = "BTC",
+                        decimals = 8
+                    )
+                    
+                    call.respond(HttpStatusCode.OK, balanceResponse)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to get Bitcoin balance: ${e.message}"))
+                }
+            }
+
+            // 이더리움 주소 잔액 조회
+            get("/ethereum/{address}") {
+                try {
+                    val address = call.parameters["address"] ?: return@get call.respond(
+                        HttpStatusCode.BadRequest, mapOf("error" to "Ethereum address is required"))
+
+                    val balance = ethereumMpcService.getBalance(address)
+                    
+                    val balanceResponse = AddressBalanceResponseDTO(
+                        address = address,
+                        network = "ethereum",
+                        balance = balance.multiply(BigDecimal("1000000000000000000")).toBigInteger().toString(), // Wei로 변환
+                        formattedBalance = balance.toString(),
+                        unit = "ETH",
+                        decimals = 18
+                    )
+                    
+                    call.respond(HttpStatusCode.OK, balanceResponse)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to get Ethereum balance: ${e.message}"))
+                }
+            }
+        }
+
         route("/bitcoin") {
             // 비트코인 멀티시그 지갑 생성
             post("/create") {
